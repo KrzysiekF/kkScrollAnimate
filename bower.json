@@ -1,0 +1,23 @@
+{
+  "name": "kkScrollAnimate",
+  "homepage": "https://github.com/KrzysiekF/kkScrollAnimate",
+  "authors": [
+    "Krzysztof Furtak <hello@krzysztof-furtak.pl>"
+  ],
+  "description": "jQuery plugin to animate website/app elements on scroll",
+  "main": "kkScrollAnimate.js",
+  "keywords": [
+    "animate",
+    "scroll",
+    "jquery",
+    "plugin"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
