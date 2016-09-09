@@ -19,5 +19,12 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "jquery": "^3.1.0",
+    "jquery-migrate": "^3.0.0"
+  },
+  "devDependencies": {
+    "materialize": "^0.97.7"
+  }
 }

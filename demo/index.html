@@ -1,10 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="no-js" lang="">
 <head>
-    <meta charset="UTF-8">
-    <title>kkScrollAnimate Demo</title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>kkScrollAnimate - Demo</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Parisienne" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/styles/style.css">
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
 </head>
 <body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
 
+<header class="navbar-fixed anim-navbar">
+    <nav class="header-content transparent">
+        <div class="nav-wrapper">
+            <a href="#!" class="brand-logo center"></a>
+
+            <ul class="left">
+                <li>
+                    <a href="#" data-activates="sidebar-left" class="button-collapse-left">
+                        <i class="material-icons">menu</i>
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="right">
+                <li>
+                    <a href="#" data-activates="sidebar-right" class="button-collapse-right">
+                        <i class="material-icons">menu</i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<div id="main">
+    <div class="hero-header top-header height-100 bg-1 valign-wrapper" style="background-size: 160vh">
+        <div class="center valign">
+            <h2 class="logo m-0 mb-5">
+                Nefele
+            </h2>
+            <div class="slug">
+                A mobile and tablet focused template
+            </div>
+            <div class="mt-20">
+                <button id="button-1" class="waves-effect waves-teal btn-flat primary mr-10">
+                    Button
+                </button>
+                <button id="button-2" class="waves-effect waves-teal btn-flat secondary">
+                    Button 2
+                </button>
+            </div>
+        </div>
+
+        <div class="overlay"></div>
+    </div>
+
+    <div id="content">
+        <div class="section">
+            <p>Hello world! This is HTML5 Boilerplate.</p>
+        </div>
+        <div class="section">
+            <p>Hello world! This is HTML5 Boilerplate.</p>
+        </div>
+        <div class="section">
+            <p>Hello world! This is HTML5 Boilerplate.</p>
+        </div>
+        <div class="section">
+            <p>Hello world! This is HTML5 Boilerplate.</p>
+        </div>
+        <div class="section">
+            <p>Hello world! This is HTML5 Boilerplate.</p>
+        </div>
+    </div>
+
+    <ul id="sidebar-right" class="side-nav">
+        <li>okok</li>
+    </ul>
+
+    <ul id="sidebar-left" class="side-nav">
+        <li><div class="userView">
+            <img class="background" src="images/office.jpg">
+            <a href="#!user"><img class="circle" src="images/yuna.jpg"></a>
+            <a href="#!name"><span class="white-text name">John Doe</span></a>
+            <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+        </div></li>
+        <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+        <li><a href="#!">Second Link</a></li>
+        <li><div class="divider"></div></li>
+        <li><a class="subheader">Subheader</a></li>
+        <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+    </ul>
+</div>
+
+<script src="assets/js/libs.min.js"></script>
+<script src="assets/js/kkScrollAnimate.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#button-1, #button-2').kkScrollAnimate({
+            scrollContent: $(document),
+            startScroll: 5,
+            endScroll: 100,
+            cssProperty: 'margin-top',
+            before: 0,
+            after: 200,
+            unit: 'px'
+        });
+
+        $('.hero-header').kkScrollAnimate({
+            scrollContent: $(document),
+            startScroll: 5,
+            endScroll: 100,
+            cssProperty: 'background-size',
+            before: 160,
+            after: 130,
+            unit: 'vh'
+        });
+    });
+</script>
 </body>
 </html>
