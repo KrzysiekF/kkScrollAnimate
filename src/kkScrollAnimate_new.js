@@ -39,10 +39,22 @@
         init: function() {
             var _this = this;
 
+            this.setData();
+            this.startFromElement();
+            this.transformProperty();
+
+            this.settings.scrollContent.on('scroll', function() {
+                _this.onScroll();
+            });
+        },
+
+        setData: function() {
             this.scrollRange = this.settings.endScroll - this.settings.startScroll;
             this.cssArgsBefore[this.settings.cssProperty] = this.settings.before + this.settings.unit;
             this.cssArgsAfter[this.settings.cssProperty] = this.settings.after + this.settings.unit;
+        },
 
+        startFromElement: function() {
             if(this.settings.startFromElement) {
 
                 var startingElement = $(this.settings.startFromElement);
@@ -68,7 +80,9 @@
                 });
 
             }
+        },
 
+        transformProperty: function() {
             if(this.settings.cssProperty == 'transform') {
 
                 // set css3 transform webkit and moz fallbacks
@@ -101,10 +115,6 @@
                 }
 
             }
-
-            this.settings.scrollContent.on('scroll', function() {
-                _this.onScroll();
-            });
         },
 
         onScroll: function() {

@@ -20,9 +20,16 @@
     $.extend(Plugin.prototype, {
         init: function() {
             var _this = this;
-            if (this.scrollRange = this.settings.endScroll - this.settings.startScroll, this.cssArgsBefore[this.settings.cssProperty] = this.settings.before + this.settings.unit, 
-            this.cssArgsAfter[this.settings.cssProperty] = this.settings.after + this.settings.unit, 
-            this.settings.startFromElement) {
+            this.setData(), this.startFromElement(), this.transformProperty(), this.settings.scrollContent.on("scroll", function() {
+                _this.onScroll();
+            });
+        },
+        setData: function() {
+            this.scrollRange = this.settings.endScroll - this.settings.startScroll, this.cssArgsBefore[this.settings.cssProperty] = this.settings.before + this.settings.unit, 
+            this.cssArgsAfter[this.settings.cssProperty] = this.settings.after + this.settings.unit;
+        },
+        startFromElement: function() {
+            if (this.settings.startFromElement) {
                 var startingElement = $(this.settings.startFromElement), startingElementOffset = startingElement.offset(), startingElementOffsetTop = startingElementOffset.top, startingElementOffsetLeft = startingElementOffset.left, windowWidth = $(window).width(), windowHeight = $(window).height();
                 this.scrollFromTop = startingElementOffsetTop - windowHeight, this.scrollFromLeft = startingElementOffsetLeft - windowWidth, 
                 $(window).bind("resize", function() {
@@ -30,6 +37,8 @@
                     _this.scrollFromLeft = startingElementOffsetLeft - windowWidth;
                 });
             }
+        },
+        transformProperty: function() {
             "transform" == this.settings.cssProperty && (// set css3 transform webkit and moz fallbacks
             this.cssArgsBefore["-webkit-transform"] = this.settings.before, this.cssArgsAfter["-webkit-transform"] = this.settings.after, 
             this.cssArgsBefore["-moz-transform"] = this.settings.before, this.cssArgsAfter["-moz-transform"] = this.settings.after, 
@@ -40,9 +49,7 @@
             this.afterProp = parseFloat(this.afterProp[0])) : this.settings.before.indexOf("scale") != -1 && (this.beforeProp = this.settings.before.split("("), 
             this.beforeProp = this.beforeProp[1].split(")"), this.beforeProp = parseFloat(this.beforeProp[0]), 
             this.afterProp = this.settings.after.split("("), this.afterProp = this.afterProp[1].split(")"), 
-            this.afterProp = parseFloat(this.afterProp[0]))), this.settings.scrollContent.on("scroll", function() {
-                _this.onScroll();
-            });
+            this.afterProp = parseFloat(this.afterProp[0])));
         },
         onScroll: function() {
             var scroll = null;
