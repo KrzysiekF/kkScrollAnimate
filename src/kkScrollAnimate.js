@@ -1,8 +1,9 @@
-(function($) {
+;( function( $, window, document, undefined ) {
 
-    $.fn.kkScrollAnimate = function(params) {
+    "use strict";
 
-        params = $.extend({
+    var pluginName = "kkScrollAnimate",
+        defaults = {
             scrollContent: $('body'),
             startFromElement: false,
             scrollType: 'vertical',
@@ -12,170 +13,191 @@
             before: 0,
             after: 0,
             unit: ''
-        }, params);
+        };
 
-        var scrollRange = params.endScroll - params.startScroll;
+    function Plugin ( element, options ) {
+        this.element = element;
 
-        var element = $(this);
+        this.settings = $.extend( {}, defaults, options );
+        this._defaults = defaults;
+        this._name = pluginName;
 
-        // create objects literal and assign the variable property for before and after
-        var cssArgsBefore = {};
-        cssArgsBefore[params.cssProperty] = params.before + params.unit;
+        this.scrollRange = null;
+        this.cssArgsBefore = {};
+        this.cssArgsAfter = {};
+        this.currentCss = {};
+        this.scrollFromTop = null;
+        this.scrollFromLeft = null;
+        this.beforeProp = null;
+        this.afterProp = null;
 
-        var cssArgsAfter = {};
-        cssArgsAfter[params.cssProperty] = params.after + params.unit;
+        this.init();
+    }
 
-        // setup startFromElement
-        if(params.startFromElement) {
+    $.extend( Plugin.prototype, {
 
-            startingElement = $(params.startFromElement);
+        init: function() {
+            var _this = this;
 
-            startingElementOffset = startingElement.offset();
-            startingElementOffsetTop = startingElementOffset.top;
-            startingElementOffsetLeft = startingElementOffset.left;
+            this.setData();
+            this.startFromElement();
+            this.transformProperty();
 
-            var windowWidth = $(window).width();
-            var windowHeight = $(window).height();
-
-            var scrollFromTop = startingElementOffsetTop - windowHeight;
-            var scrollFromLeft = startingElementOffsetLeft - windowWidth;
-
-            $(window).bind('resize', function() {
-
-                windowWidth = $(window).width();
-                windowHeight = $(window).height();
-
-                scrollFromTop = startingElementOffsetTop - windowHeight;
-                scrollFromLeft = startingElementOffsetLeft - windowWidth;
-
+            this.settings.scrollContent.on('scroll', function() {
+                _this.onScroll();
             });
+        },
 
-        }
+        setData: function() {
+            this.scrollRange = this.settings.endScroll - this.settings.startScroll;
+            this.cssArgsBefore[this.settings.cssProperty] = this.settings.before + this.settings.unit;
+            this.cssArgsAfter[this.settings.cssProperty] = this.settings.after + this.settings.unit;
+        },
 
-        // setup css3 transform
-        if(params.cssProperty == 'transform') {
+        startFromElement: function() {
+            if(this.settings.startFromElement) {
 
-            // set css3 transform webkit and moz fallbacks
-            cssArgsBefore['-webkit-transform'] = params.before;
-            cssArgsAfter['-webkit-transform'] = params.after;
-            cssArgsBefore['-moz-transform'] = params.before;
-            cssArgsAfter['-moz-transform'] = params.after;
+                var startingElement = $(this.settings.startFromElement);
 
-            // get int from css3 transform rotate and skew
-            if(params.before.indexOf('deg') != -1) {
+                var startingElementOffset = startingElement.offset();
+                var startingElementOffsetTop = startingElementOffset.top;
+                var startingElementOffsetLeft = startingElementOffset.left;
 
-                var before = params.before.split('(');
-                before = before[1].split('deg');
-                before = parseFloat(before[0]);
+                var windowWidth = $(window).width();
+                var windowHeight = $(window).height();
 
-                var after = params.after.split('(');
-                after = after[1].split('deg');
-                after = parseFloat(after[0]);
+                this.scrollFromTop = startingElementOffsetTop - windowHeight;
+                this.scrollFromLeft = startingElementOffsetLeft - windowWidth;
 
-            } else
+                $(window).bind('resize', function() {
 
-            // get int from css3 transform scale
-            if(params.before.indexOf('scale') != -1) {
+                    windowWidth = $(window).width();
+                    windowHeight = $(window).height();
 
-                var before = params.before.split('(');
-                before = before[1].split(')');
-                before = parseFloat(before[0]);
+                    _this.scrollFromTop = startingElementOffsetTop - windowHeight;
+                    _this.scrollFromLeft = startingElementOffsetLeft - windowWidth;
 
-                var after = params.after.split('(');
-                after = after[1].split(')');
-                after = parseFloat(after[0]);
+                });
 
             }
+        },
 
-        }
+        transformProperty: function() {
+            if(this.settings.cssProperty == 'transform') {
 
-        var currentCss = {};
+                // set css3 transform webkit and moz fallbacks
+                this.cssArgsBefore['-webkit-transform'] = this.settings.before;
+                this.cssArgsAfter['-webkit-transform'] = this.settings.after;
+                this.cssArgsBefore['-moz-transform'] = this.settings.before;
+                this.cssArgsAfter['-moz-transform'] = this.settings.after;
 
-        this.each(function() {
+                // get int from css3 transform rotate and skew
+                if(this.settings.before.indexOf('deg') != -1) {
 
-            scrollAnimate();
+                    this.beforeProp = this.settings.before.split('(');
+                    this.beforeProp = this.beforeProp[1].split('deg');
+                    this.beforeProp = parseFloat(this.beforeProp[0]);
 
-            params.scrollContent.bind('scroll', function() {
+                    this.afterProp = this.settings.after.split('(');
+                    this.afterProp = this.afterProp[1].split('deg');
+                    this.afterProp = parseFloat(this.afterProp[0]);
 
-                scrollAnimate();
+                } else if(this.settings.before.indexOf('scale') != -1) {
 
-            });
+                    this.beforeProp = this.settings.before.split('(');
+                    this.beforeProp = this.beforeProp[1].split(')');
+                    this.beforeProp = parseFloat(this.beforeProp[0]);
 
-            function scrollAnimate() {
-
-                if(params.scrollType == 'vertical') {
-
-                    var scroll = params.scrollContent.scrollTop();
-
-                    if(params.startFromElement) {
-
-                        scroll = scroll - scrollFromTop;
-
-                    }
-
-                } else if(params.scrollType == 'horizontal') {
-
-                    var scroll = params.scrollContent.scrollLeft();
-
-                    if(params.startFromElement) {
-
-                        scroll = scroll - scrollFromLeft;
-
-                    }
+                    this.afterProp = this.settings.after.split('(');
+                    this.afterProp = this.afterProp[1].split(')');
+                    this.afterProp = parseFloat(this.afterProp[0]);
 
                 }
 
-                var scrollPercentage = (scroll - params.startScroll) / scrollRange;
+            }
+        },
 
-                if(scroll < params.startScroll) {
+        onScroll: function() {
+            var scroll = null;
 
-                    if(params.cssProperty === 'add-class') {
-                        element.removeClass(cssArgsAfter['add-class']);
-                    } else {
-                        element.css(cssArgsBefore);
-                    }
+            if(this.settings.scrollType == 'vertical') {
 
-                } else if(scroll > params.endScroll) {
+                scroll = this.settings.scrollContent.scrollTop();
 
-                    element.css(cssArgsAfter);
+                if(this.settings.startFromElement) {
+
+                    scroll = scroll - scrollFromTop;
+
+                }
+
+            } else if(this.settings.scrollType == 'horizontal') {
+
+                scroll = this.settings.scrollContent.scrollLeft();
+
+                if(this.settings.startFromElement) {
+
+                    scroll = scroll - scrollFromLeft;
+
+                }
+
+            }
+
+            var scrollPercentage = (scroll - this.settings.startScroll) / this.scrollRange;
+
+            if(scroll < this.settings.startScroll) {
+
+                if(this.settings.cssProperty === 'add-class') {
+                    $(this.element).removeClass(this.cssArgsAfter['add-class']);
+                } else {
+                    $(this.element).css(this.cssArgsBefore);
+                }
+
+            } else if(scroll > this.settings.endScroll) {
+
+                $(this.element).css(this.cssArgsAfter);
+
+            } else {
+
+                if(this.settings.cssProperty === 'add-class') {
+                    $(this.element).addClass(this.cssArgsAfter['add-class']);
+                } else if(this.settings.cssProperty == 'transform') {
+
+                    var currentTransformValue = this.beforeProp + (this.afterProp - this.beforeProp) * scrollPercentage;
+
+                    if(this.settings.before.indexOf('rotate') != -1)
+                        var currentTransform = 'rotate(' + currentTransformValue + 'deg)';
+
+                    else if(this.settings.before.indexOf('skew') != -1)
+                        var currentTransform = 'skew(' + currentTransformValue + 'deg)';
+
+                    else if(this.settings.before.indexOf('scale') != -1)
+                        var currentTransform = 'scale(' + currentTransformValue + ')';
+
+                    this.currentCss[this.settings.cssProperty] = currentTransform;
+                    this.currentCss['-moz-transform'] = currentTransform;
+                    this.currentCss['-webkit-transform'] = currentTransform;
+
+                    $(this.element).css(this.currentCss);
 
                 } else {
 
-                    if(params.cssProperty === 'add-class') {
-                        element.addClass(cssArgsAfter['add-class']);
-                    } else if(params.cssProperty == 'transform') {
-
-                        var currentTransformValue = before + (after - before) * scrollPercentage;
-
-                        if(params.before.indexOf('rotate') != -1)
-                            var currentTransform = 'rotate(' + currentTransformValue + 'deg)';
-
-                        else if(params.before.indexOf('skew') != -1)
-                            var currentTransform = 'skew(' + currentTransformValue + 'deg)';
-
-                        else if(params.before.indexOf('scale') != -1)
-                            var currentTransform = 'scale(' + currentTransformValue + ')';
-
-                        currentCss[params.cssProperty] = currentTransform;
-                        currentCss['-moz-transform'] = currentTransform;
-                        currentCss['-webkit-transform'] = currentTransform;
-
-                        element.css(currentCss);
-
-                    } else {
-
-                        currentCss[params.cssProperty] = (params.before + (params.after - params.before) * scrollPercentage) + params.unit;
-                        element.css(currentCss);
-
-                    }
+                    this.currentCss[this.settings.cssProperty] = (this.settings.before + (this.settings.after - this.settings.before) * scrollPercentage) + this.settings.unit;
+                    $(this.element).css(this.currentCss);
 
                 }
 
             }
+        }
 
-        });
+    } );
 
-        return this;
+    $.fn[ pluginName ] = function( options ) {
+        return this.each( function() {
+            if ( !$.data( this, "plugin_" + pluginName ) ) {
+                $.data( this, "plugin_" +
+                    pluginName, new Plugin( this, options ) );
+            }
+        } );
     };
 
-})(jQuery);
+} )( jQuery, window, document );

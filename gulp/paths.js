@@ -5,7 +5,7 @@ module.exports = {
     core: {
         js: {
             files: [
-                'src/kkScrollAnimate_new.js'
+                'src/kkScrollAnimate.js'
             ],
             dest: 'dist',
             watch: ['src/*.js'],
